@@ -77,7 +77,6 @@ team_t team = {
 
 /* Given block ptr bp, compute address of next and previous blocks 
  * as well as the header, footer, left, right, parent, and the siblings */
-// #define NEXT_BLKP(bp)	((char *)(bp) + GET_SIZE(((char *)(bp) - WSIZE)))
 #define NEXT_BLKP(bp) 	  ((char *)(bp) + GET_SIZE(HDRP(bp)))
 #define PREV_BLKP(bp)	  ((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
 
