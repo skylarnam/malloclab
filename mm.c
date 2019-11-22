@@ -113,14 +113,20 @@ static void remove_node(void *bp);
 int mm_init(void)
 {
 	if ((heap_listp = mem_sbrk(4*WSIZE)) == (void *)-1) return -1;
-	PUT(heap_listp, 0);							 /* Alignment padding */
-	PUT(heap_listp + (1*WSIZE), PACK(DSIZE, 1)); /* Prologue header */
-	PUT(heap_listp + (2*WSIZE), PACK(DSIZE, 1)); /* Prologue footer */
-	PUT(heap_listp + (3*WSIZE), PACK(0, 1)); 	 /* Epilogue header */
+
+	/* Alignment padding */
+	PUT(heap_listp, 0);
+	/* Prologue header */
+	PUT(heap_listp + (1*WSIZE), PACK(DSIZE, 1));
+	/* Prologue footer */
+	PUT(heap_listp + (2*WSIZE), PACK(DSIZE, 1));
+	/* Epilogue header */
+	PUT(heap_listp + (3*WSIZE), PACK(0, 1));
 	heap_listp += (2*WSIZE);
 	
 	/* Extend the empty heap with a free block of CHUNKSIZE bytes */
 	if (extend_heap(CHUNKSIZE/WSIZE) == NULL) return -1;
+	
     return 0;
 }
 
@@ -134,9 +140,12 @@ static void *extend_heap(size_t words)
 	if ((long)(bp = mem_sbrk(size)) == -1) return NULL;
 	
 	/* Initialize free block header/footer and the epilogue header */
-	PUT(HDRP(bp), PACK(size, 0)); 			/* Free block header */
-	PUT(FTRP(bp), PACK(size, 0)); 			/* Free block footer */
-	PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1));   /* New epilogue header */
+	/* Free block header */
+	PUT(HDRP(bp), PACK(size, 0));
+	/* Free block footer */
+	PUT(FTRP(bp), PACK(size, 0));
+	/* New epilogue header */
+	PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1));
 
 	/* Coalesce if the previous block was free */
 	return coalesce(bp);	
@@ -151,7 +160,9 @@ static void *find_fit(size_t asize)
 			return bp;
 		}
 	}
-	return NULL; /* no fit */
+
+	/* no fit */
+	return NULL;
 }
 
 /* 
@@ -161,8 +172,10 @@ static void *find_fit(size_t asize)
 void *mm_malloc(size_t size)
 {
 	char *bp;
-	size_t asize;		/* Adjusted block size */
-	size_t extendsize;	/* Amount to extend heap if no fit */
+	/* Adjusted block size */
+	size_t asize;
+	/* Amount to extend heap if no fit */
+	size_t extendsize;
 	
 	/* Ignore spurious requests */
 	if (size == 0) return NULL;
@@ -268,13 +281,18 @@ void *mm_realloc(void *ptr, size_t size)
     size_t copySize;
     
     newptr = mm_malloc(size);
+
     if (newptr == NULL)
       return NULL;
+
     copySize = *(size_t *)((char *)oldptr - SIZE_T_SIZE);
+
     if (size < copySize)
       copySize = size;
+
     memcpy(newptr, oldptr, copySize);
     mm_free(oldptr);
+
     return newptr;
 }
 
